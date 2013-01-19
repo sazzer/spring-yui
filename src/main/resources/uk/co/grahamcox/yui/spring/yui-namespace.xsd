@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://grahamcox.co.uk/schema/spring/yui" 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://grahamcox.co.uk/schema/spring/yui"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.springframework.org/schema/beans" />
+
+    <!-- The XML Type for defining a YUI Group -->
+    <xsd:complexType name="groupType">
+        <xsd:attribute name="name" use="required" type="xsd:string" />
+        <xsd:attribute name="base" use="required" type="xsd:string" />
+    </xsd:complexType>
+
+    <!-- The XML Type for defining the filter to use by default -->
+    <xsd:simpleType name="filterEnumType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="raw" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- The actual element to produce the YUI Controller -->
+    <xsd:element name="controller">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:sequence>
+                        <xsd:element name="group" type="groupType" minOccurs="1" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+
+                    <xsd:attribute name="base" type="xsd:string" use="required" />
+                    <xsd:attribute name="combo" type="xsd:boolean" use="optional" />
+                    <xsd:attribute name="filter" type="filterEnumType" use="optional" />
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
+            

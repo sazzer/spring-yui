@@ -1,0 +1,28 @@
+{
+    "filter": "raw",
+    "groups": {
+        "test": {
+            "combine": false,
+            "base": "/yui/test/",
+            "modules": {
+                "module-a": {
+                    "requires": [
+                        "module-b",
+                        "module-c"
+                    ]
+                },
+                "module-b": {
+                    "requires": [
+                        "module-c",
+                        "widget"
+                    ]
+                },
+                "module-c": {
+                    "requires": [
+                        "base"
+                    ]
+                }
+            }
+        }
+    }
+}

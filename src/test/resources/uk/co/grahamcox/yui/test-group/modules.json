@@ -1,0 +1,23 @@
+{
+    "module-a":{
+        "depends":[
+            "module-b",
+            "module-c"
+        ]
+    },
+    "module-b":{
+        "version":"2",
+        "depends":[
+            "module-c",
+            "widget"
+        ]
+    },
+    "module-c":{
+        "depends":[
+            "base"
+        ],
+        "files":[
+            "c/c.js"
+        ]
+    }
+}
