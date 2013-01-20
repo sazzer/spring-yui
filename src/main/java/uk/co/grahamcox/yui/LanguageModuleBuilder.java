@@ -16,11 +16,17 @@
  */
 package uk.co.grahamcox.yui;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Mechanism to build the language file for a module
@@ -60,6 +66,23 @@ public class LanguageModuleBuilder {
                 moduleOutput.append("'").append(module.getName()).append("',\n");
                 moduleOutput.append("'").append(language).append("',\n");
                 moduleOutput.append("{\n");
+
+                String resourceKey = module.getMessagesFile().toString();
+                Locale locale = Locale.forLanguageTag(language);
+
+                ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceKey, locale, new LanguageControl());
+                Enumeration<String> keys = resourceBundle.getKeys();
+                boolean isFirst = true;
+                while (keys.hasMoreElements()) {
+                    String key = keys.nextElement();
+                    String value = resourceBundle.getString(key);
+                    if (!isFirst) {
+                        moduleOutput.append(",");
+                    }
+                    isFirst = false;
+                    moduleOutput.append("'").append(key).append("': '").append(value).append("'");
+                }
+
                 moduleOutput.append("});\n");
                 moduleOutput.append("}, '").append(module.getVersion()).append("');");
                 return moduleOutput.toString();

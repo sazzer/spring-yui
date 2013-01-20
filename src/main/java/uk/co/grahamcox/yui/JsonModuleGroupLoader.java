@@ -45,6 +45,7 @@ public class JsonModuleGroupLoader implements ModuleGroupLoader {
     public static final String BASE_PREFIX = "/";
     public static final String PATH_SEPARATOR = "/";
     public static final String JS_EXTENSION = ".js";
+    public static final String MESSAGES_FILE = "/lang/messages";
 
     /**
      * Load the definitions from the provided URL
@@ -136,6 +137,7 @@ public class JsonModuleGroupLoader implements ModuleGroupLoader {
         }
         module.setFiles(urls);
 
+        module.setMessagesFile(new URL(base.toString() + PATH_SEPARATOR + name + MESSAGES_FILE));
         return module;
     }
 

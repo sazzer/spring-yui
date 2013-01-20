@@ -48,6 +48,9 @@ public class Module {
     /** The module languages */
     @NotNull
     private Collection<String> languages;
+    /** The URL of the messages file to use */
+    @NotNull
+    private URL messagesFile;
 
     /**
      * Sets new The name of the module.
@@ -153,5 +156,21 @@ public class Module {
      */
     public void setLanguages(Collection<String> languages) {
         this.languages = languages;
+    }
+
+    /**
+     * Get the URL of the messages file
+     * @return the URL of the messages file
+     */
+    public URL getMessagesFile() {
+        return messagesFile;
+    }
+
+    /**
+     * Set the URL of the messages file
+     * @param messagesFile the URL of the messages file
+     */
+    public void setMessagesFile(URL messagesFile) {
+        this.messagesFile = messagesFile;
     }
 }
