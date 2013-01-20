@@ -40,8 +40,10 @@ public class YuiController {
     private static final String CONTENT_TYPE = "text/javascript";
     /** The character set to use */
     private static final String CHARSET = "utf-8";
-    /** Pattern to get the module name and filter out of the query string */
+    /** Pattern to get the module name and filter out of the query string for javascript modules */
     private static final Pattern COMBO_MODULE_PATTERN = Pattern.compile("(.*)\\/\\1(-(.*))?\\.js");
+    /** Pattern to get the module name and filter out of the query string for language modules */
+    private static final Pattern COMBO_LANGUAGE_PATTERN = Pattern.compile("(.*)\\/lang\\/\\1_(.*?)(-(.*))?\\.js");
     /** the module groups to support */
     @NotNull
     @Size(min=1)
@@ -131,6 +133,7 @@ public class YuiController {
     public void getComboModules(@PathVariable("group") String group, WebRequest webRequest,
                                 HttpServletResponse response) throws IOException {
         Iterator<String> names = webRequest.getParameterNames();
+        boolean missing = false;
         while (names.hasNext()) {
             String next = names.next();
             Matcher matcher = COMBO_MODULE_PATTERN.matcher(next);
@@ -150,8 +153,30 @@ public class YuiController {
                 getModule(group, moduleName, filter, response);
             }
             else {
-                throw new UnknownModuleException(group, next);
+                matcher = COMBO_LANGUAGE_PATTERN.matcher(next);
+                if (matcher.matches()) {
+                    String moduleName = matcher.group(1);
+                    String language = matcher.group(2);
+                    Filter filter = Filter.RAW;
+                    if (matcher.group(4) != null) {
+                        switch (matcher.group(4)) {
+                            case "debug":
+                                filter = Filter.DEBUG;
+                                break;
+                            case "min":
+                                filter = Filter.MINIFY;
+                                break;
+                        }
+                    }
+                    getModuleLanguage(group, moduleName, language, filter, response);
+                }
+                else {
+                    missing = true;
+                }
             }
+        }
+        if (missing) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No valid modules were requested");
         }
     }
 
@@ -177,7 +202,7 @@ public class YuiController {
      */
     @RequestMapping("/modules/{group}/{module}/{module}-debug.js")
     public void getDebugFile(@PathVariable("group") String group, @PathVariable("module") String module,
-                           HttpServletResponse response) throws IOException {
+                             HttpServletResponse response) throws IOException {
         getModule(group, module, Filter.DEBUG, response);
     }
 
@@ -195,6 +220,46 @@ public class YuiController {
     }
 
     /**
+     * Get the RAW version of the module
+     * @param group the group of the module
+     * @param module the module itself
+     * @param response the response to write to
+     * @throws IOException if an error occurs
+     */
+    @RequestMapping("/modules/{group}/{module}/lang/{module}_{lang}.js")
+    public void getRawLanguageFile(@PathVariable("group") String group, @PathVariable("module") String module,
+                                   @PathVariable("lang") String lang, HttpServletResponse response) throws IOException {
+        getModuleLanguage(group, module, lang, Filter.RAW, response);
+    }
+
+    /**
+     * Get the RAW version of the module
+     * @param group the group of the module
+     * @param module the module itself
+     * @param response the response to write to
+     * @throws IOException if an error occurs
+     */
+    @RequestMapping("/modules/{group}/{module}/lang/{module}_{lang}-debug.js")
+    public void getDebugLanguageFile(@PathVariable("group") String group, @PathVariable("module") String module,
+                                     @PathVariable("lang") String lang, HttpServletResponse response)
+            throws IOException {
+        getModuleLanguage(group, module, lang, Filter.DEBUG, response);
+    }
+
+    /**
+     * Get the RAW version of the module
+     * @param group the group of the module
+     * @param module the module itself
+     * @param response the response to write to
+     * @throws IOException if an error occurs
+     */
+    @RequestMapping("/modules/{group}/{module}/lang/{module}_{lang}-min.js")
+    public void getMinLanguageFile(@PathVariable("group") String group, @PathVariable("module") String module,
+                                   @PathVariable("lang") String lang, HttpServletResponse response) throws IOException {
+        getModuleLanguage(group, module, lang, Filter.MINIFY, response);
+    }
+
+    /**
      * Handle the boilerplate of getting the contents of a module
      * @param group the group of the module
      * @param module the module itself
@@ -208,5 +273,19 @@ public class YuiController {
         response.setContentType(CONTENT_TYPE);
         response.setCharacterEncoding(CHARSET);
         response.getWriter().write(contents);
+    }
+
+    /**
+     * Handle the boilerplate of getting the language file for a module
+     * @param group the group of the module
+     * @param module the module itself
+     * @param language the language to get
+     * @param filter the filter to apply
+     * @param response the response to write to
+     * @throws IOException if an error occurs
+     */
+    private void getModuleLanguage(String group, String module, String language, Filter filter,
+                                   HttpServletResponse response) throws IOException {
+
     }
 }
