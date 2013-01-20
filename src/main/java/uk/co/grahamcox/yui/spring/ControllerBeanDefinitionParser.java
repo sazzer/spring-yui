@@ -25,6 +25,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 import uk.co.grahamcox.yui.JsonModuleGroupLoader;
+import uk.co.grahamcox.yui.LanguageModuleBuilder;
 import uk.co.grahamcox.yui.Module;
 import uk.co.grahamcox.yui.ModuleBuilder;
 import uk.co.grahamcox.yui.ModuleGroup;
@@ -95,6 +96,7 @@ public class ControllerBeanDefinitionParser extends AbstractSingleBeanDefinition
 
             builder.addPropertyValue("yuiConfigurer", buildConfigurer(filterAttr, combo, urlBase));
             builder.addPropertyValue("moduleBuilder", buildModuleBuilder(groups));
+            builder.addPropertyValue("languageModuleBuilder", buildLanguageModuleBuilder(groups));
             builder.addPropertyValue("groups", groups);
         }
         catch (IOException e) {
@@ -125,6 +127,17 @@ public class ControllerBeanDefinitionParser extends AbstractSingleBeanDefinition
      */
     private ModuleBuilder buildModuleBuilder(Collection<ModuleGroup> groups) {
         ModuleBuilder moduleBuilder = new ModuleBuilder();
+        moduleBuilder.setModuleGroups(groups);
+        return moduleBuilder;
+    }
+
+    /**
+     * Build the Module Builder to use
+     * @param groups the groups to work with
+     * @return the module builder
+     */
+    private LanguageModuleBuilder buildLanguageModuleBuilder(Collection<ModuleGroup> groups) {
+        LanguageModuleBuilder moduleBuilder = new LanguageModuleBuilder();
         moduleBuilder.setModuleGroups(groups);
         return moduleBuilder;
     }

@@ -54,6 +54,9 @@ public class YuiController {
     /** The means to generate YUI module files */
     @NotNull
     private ModuleBuilder moduleBuilder;
+    /** The means to generate YUI language files */
+    @NotNull
+    private LanguageModuleBuilder languageModuleBuilder;
 
     /**
      * Sets new The means to generate YUI configuration.
@@ -62,15 +65,6 @@ public class YuiController {
      */
     public void setYuiConfigurer(YuiConfigurer yuiConfigurer) {
         this.yuiConfigurer = yuiConfigurer;
-    }
-
-    /**
-     * Gets The means to generate YUI configuration.
-     *
-     * @return Value of The means to generate YUI configuration.
-     */
-    public YuiConfigurer getYuiConfigurer() {
-        return yuiConfigurer;
     }
 
     /**
@@ -83,30 +77,20 @@ public class YuiController {
     }
 
     /**
-     * Gets the module groups to support.
-     *
-     * @return Value of the module groups to support.
-     */
-    public Collection<ModuleGroup> getGroups() {
-        return groups;
-    }
-
-    /**
-     * Gets The means to generate YUI module files.
-     *
-     * @return Value of The means to generate YUI module files.
-     */
-    public ModuleBuilder getModuleBuilder() {
-        return moduleBuilder;
-    }
-
-    /**
      * Sets new The means to generate YUI module files.
      *
      * @param moduleBuilder New value of The means to generate YUI module files.
      */
     public void setModuleBuilder(ModuleBuilder moduleBuilder) {
         this.moduleBuilder = moduleBuilder;
+    }
+
+    /**
+     * Set the language module builder to use
+     * @param languageModuleBuilder the language module builder to use
+     */
+    public void setLanguageModuleBuilder(LanguageModuleBuilder languageModuleBuilder) {
+        this.languageModuleBuilder = languageModuleBuilder;
     }
 
     /**
@@ -286,6 +270,9 @@ public class YuiController {
      */
     private void getModuleLanguage(String group, String module, String language, Filter filter,
                                    HttpServletResponse response) throws IOException {
-
+        String contents = languageModuleBuilder.getModuleFile(group, module, language);
+        response.setContentType(CONTENT_TYPE);
+        response.setCharacterEncoding(CHARSET);
+        response.getWriter().write(contents);
     }
 }
