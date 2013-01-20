@@ -40,6 +40,8 @@ public class YuiConfigurer {
     private static final String MODULES_KEY = "modules";
     /** The key for the dependencies of a module */
     private static final String MODULE_DEPENDENCIES_KEY = "requires";
+    /** The key for the languages of a module */
+    private static final String MODULE_LANGUAGES_KEY = "lang";
     public static final String PATH_SEPARATOR = "/";
     public static final String COMBO_BASE_KEY = "comboBase";
     public static final String COMBO_ROOT_KEY = "root";
@@ -75,6 +77,12 @@ public class YuiConfigurer {
                 ArrayNode requiresNode = moduleNode.putArray(MODULE_DEPENDENCIES_KEY);
                 for (String dependency : module.getDependencies()) {
                     requiresNode.add(dependency);
+                }
+                if (!module.getLanguages().isEmpty()) {
+                    ArrayNode langsNode = moduleNode.putArray(MODULE_LANGUAGES_KEY);
+                    for (String lang : module.getLanguages()) {
+                        langsNode.add(lang);
+                    }
                 }
             }
         }

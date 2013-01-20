@@ -10,6 +10,10 @@
                         "module-b",
                         "module-c",
                         "intl"
+                    ],
+                    "lang": [
+                        "fr",
+                        "en"
                     ]
                 },
                 "module-b": {
