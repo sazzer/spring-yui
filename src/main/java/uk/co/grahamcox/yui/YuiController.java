@@ -43,7 +43,7 @@ public class YuiController {
     /** Pattern to get the module name and filter out of the query string for javascript modules */
     private static final Pattern COMBO_MODULE_PATTERN = Pattern.compile("(.*)\\/\\1(-(.*))?\\.js");
     /** Pattern to get the module name and filter out of the query string for language modules */
-    private static final Pattern COMBO_LANGUAGE_PATTERN = Pattern.compile("(.*)\\/lang\\/\\1_(.*?)(-(.*))?\\.js");
+    private static final Pattern COMBO_LANGUAGE_PATTERN = Pattern.compile("(.*)\\/lang\\/\\1(_(.*?))?(-(.*))?\\.js");
     /** the module groups to support */
     @NotNull
     @Size(min=1)
@@ -140,10 +140,10 @@ public class YuiController {
                 matcher = COMBO_LANGUAGE_PATTERN.matcher(next);
                 if (matcher.matches()) {
                     String moduleName = matcher.group(1);
-                    String language = matcher.group(2);
+                    String language = matcher.group(3);
                     Filter filter = Filter.RAW;
-                    if (matcher.group(4) != null) {
-                        switch (matcher.group(4)) {
+                    if (matcher.group(5) != null) {
+                        switch (matcher.group(5)) {
                             case "debug":
                                 filter = Filter.DEBUG;
                                 break;

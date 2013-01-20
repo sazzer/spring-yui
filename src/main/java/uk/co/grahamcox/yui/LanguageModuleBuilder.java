@@ -60,15 +60,24 @@ public class LanguageModuleBuilder {
             Module module = moduleGroup.findModule(file);
             if (module != null) {
                 StringBuilder moduleOutput = new StringBuilder();
-                moduleOutput.append("YUI.add('lang/").append(module.getName()).append("_").append(language)
-                        .append("', function (Y) {\n");
+                moduleOutput.append("YUI.add('lang/").append(module.getName());
+                if (language != null && !language.isEmpty()) {
+                    moduleOutput.append("_").append(language);
+                }
+                moduleOutput.append("', function (Y) {\n");
                 moduleOutput.append("Y.Intl.add(\n");
                 moduleOutput.append("'").append(module.getName()).append("',\n");
                 moduleOutput.append("'").append(language).append("',\n");
                 moduleOutput.append("{\n");
 
                 String resourceKey = module.getMessagesFile().toString();
-                Locale locale = Locale.forLanguageTag(language);
+                Locale locale;
+                if (language == null || language.isEmpty()) {
+                    locale = Locale.getDefault();
+                }
+                else {
+                    locale = Locale.forLanguageTag(language);
+                }
 
                 ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceKey, locale, new LanguageControl());
                 Enumeration<String> keys = resourceBundle.getKeys();
