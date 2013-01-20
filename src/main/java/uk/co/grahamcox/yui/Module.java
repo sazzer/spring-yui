@@ -45,6 +45,9 @@ public class Module {
     /** The module dependencies */
     @NotNull
     private Collection<String> dependencies;
+    /** The module languages */
+    @NotNull
+    private Collection<String> languages;
 
     /**
      * Sets new The name of the module.
@@ -134,5 +137,21 @@ public class Module {
      */
     public Collection<String> getDependencies() {
         return dependencies;
+    }
+
+    /**
+     * Get the supported languages
+     * @return the languages
+     */
+    public Collection<String> getLanguages() {
+        return languages;
+    }
+
+    /**
+     * Set the supported languages
+     * @param languages the supported languages
+     */
+    public void setLanguages(Collection<String> languages) {
+        this.languages = languages;
     }
 }

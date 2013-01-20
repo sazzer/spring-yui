@@ -3,6 +3,10 @@
         "depends":[
             "module-b",
             "module-c"
+        ],
+        "lang": [
+            "en",
+            "fr"
         ]
     },
     "module-b":{

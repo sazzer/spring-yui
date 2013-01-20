@@ -55,11 +55,15 @@ public class JsonModuleGroupLoaderTest {
         Assert.assertEquals("module-a", module.getName());
         Assert.assertEquals("/module-a", module.getBase());
         Assert.assertEquals("1.0.0", module.getVersion());
-        Assert.assertEquals(2, module.getDependencies().size());
+        Assert.assertEquals(3, module.getDependencies().size());
         Assert.assertTrue(module.getDependencies().contains("module-b"));
         Assert.assertTrue(module.getDependencies().contains("module-c"));
+        Assert.assertTrue(module.getDependencies().contains("intl"));
         Assert.assertEquals(1, module.getFiles().size());
         Assert.assertTrue(module.getFiles().contains(new URL(url + "/module-a/module-a.js")));
+        Assert.assertEquals(2, module.getLanguages().size());
+        Assert.assertTrue(module.getLanguages().contains("en"));
+        Assert.assertTrue(module.getLanguages().contains("fr"));
 
         module = modules.get(1);
         Assert.assertEquals("module-b", module.getName());
@@ -70,6 +74,7 @@ public class JsonModuleGroupLoaderTest {
         Assert.assertTrue(module.getDependencies().contains("widget"));
         Assert.assertEquals(1, module.getFiles().size());
         Assert.assertTrue(module.getFiles().contains(new URL(url + "/module-b/module-b.js")));
+        Assert.assertEquals(0, module.getLanguages().size());
 
         module = modules.get(2);
         Assert.assertEquals("module-c", module.getName());
@@ -79,5 +84,6 @@ public class JsonModuleGroupLoaderTest {
         Assert.assertTrue(module.getDependencies().contains("base"));
         Assert.assertEquals(1, module.getFiles().size());
         Assert.assertTrue(module.getFiles().contains(new URL(url + "/c/c.js")));
+        Assert.assertEquals(0, module.getLanguages().size());
     }
 }

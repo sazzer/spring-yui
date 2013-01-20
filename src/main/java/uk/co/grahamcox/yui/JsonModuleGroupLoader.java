@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -105,57 +106,65 @@ public class JsonModuleGroupLoader implements ModuleGroupLoader {
         }
         module.setVersion(version);
 
+        Set<String> languages = new HashSet<>();
+        languages.addAll(loadStringArray("lang", name, moduleNode));
+        module.setLanguages(languages);
+
         Set<String> dependencies = new HashSet<>();
-        JsonNode dependsNode = moduleNode.get("depends");
+        if (!languages.isEmpty()) {
+            dependencies.add("intl");
+        }
+        dependencies.addAll(loadStringArray("depends", name, moduleNode));
+        module.setDependencies(dependencies);
+
+        List<String> files = new ArrayList<>();
+        files.addAll(loadStringArray("files", name, moduleNode));
+        if (files.isEmpty()) {
+            // Np file defined, so we make a single filename based on the module name
+            String moduleFile = name + PATH_SEPARATOR + name + JS_EXTENSION;
+            files.add(moduleFile);
+        }
+
+        List<URL> urls = new ArrayList<>();
+        for (String file : files) {
+            if (file.startsWith(PATH_SEPARATOR)) {
+                urls.add(new URL(base.toString() + file));
+            }
+            else {
+                urls.add(new URL(base.toString() + PATH_SEPARATOR + file));
+            }
+        }
+        module.setFiles(urls);
+
+        return module;
+    }
+
+    /**
+     * Load the contents of the requested string array
+     * @param elementName the name of the array to load
+     * @param moduleName the name of the module
+     * @param moduleNode the node containing the array
+     * @return the contents of the array
+     */
+    private Collection<String> loadStringArray(String elementName, String moduleName, ObjectNode moduleNode) {
+        List<String> target = new ArrayList<>();
+        JsonNode dependsNode = moduleNode.get(elementName);
         if (dependsNode != null) {
             if (dependsNode instanceof ArrayNode) {
                 ArrayNode dependsArray = (ArrayNode)dependsNode;
                 for (int i = 0; i < dependsArray.size(); ++i) {
                     if (dependsArray.get(i) instanceof TextNode) {
-                        dependencies.add(dependsArray.get(i).asText());
+                        target.add(dependsArray.get(i).asText());
                     }
                     else {
-                        LOG.warn("Entry {} in dependencies of module {} is not a text node", i, name);
+                        LOG.warn("Entry {} in {} of module {} is not a text node", i, elementName, moduleName);
                     }
                 }
             }
             else {
-                LOG.warn("Node 'depends' in module '{}' is not an Array", name);
+                LOG.warn("Node '{}' in module '{}' is not an Array", elementName, moduleName);
             }
         }
-        module.setDependencies(dependencies);
-
-        List<URL> files = new ArrayList<>();
-        JsonNode filesNode = moduleNode.get("files");
-        if (filesNode != null) {
-            if (filesNode instanceof ArrayNode) {
-                ArrayNode filesArray = (ArrayNode)filesNode;
-                for (int i = 0; i < filesArray.size(); ++i) {
-                    if (filesArray.get(i) instanceof TextNode) {
-                        String entry = filesArray.get(i).asText();
-                        if (entry.startsWith(PATH_SEPARATOR)) {
-                            files.add(new URL(base.toString() + entry));
-                        }
-                        else {
-                            files.add(new URL(base.toString() + PATH_SEPARATOR + entry));
-                        }
-                    }
-                    else {
-                        LOG.warn("Entry {} in files of module {} is not a text node", i, name);
-                    }
-                }
-            }
-            else {
-                LOG.warn("Node 'files' in module '{}' is not an Array", name);
-            }
-        }
-        else {
-            // Np file defined, so we make a single filename based on the module name
-            String moduleFile = base.toString() + PATH_SEPARATOR + name + PATH_SEPARATOR + name + JS_EXTENSION;
-            files.add(new URL(moduleFile));
-        }
-        module.setFiles(files);
-
-        return module;
+        return target;
     }
 }

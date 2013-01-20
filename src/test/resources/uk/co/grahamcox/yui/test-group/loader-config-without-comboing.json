@@ -8,7 +8,8 @@
                 "module-a": {
                     "requires": [
                         "module-b",
-                        "module-c"
+                        "module-c",
+                        "intl"
                     ]
                 },
                 "module-b": {
